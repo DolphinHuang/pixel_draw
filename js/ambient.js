@@ -2,25 +2,8 @@
 const SCALE = 4;
 const TAU = Math.PI * 2;
 
-export const THEMES = ['petals', 'stars', 'snow', 'off'];
+export const THEMES = ['stars', 'snow', 'off'];
 
-const PETAL_FRAMES = [
-  ['.PP.', 'PLLP', '.PP.'],
-  ['..P', '.LP', 'PL.', 'P..'],
-  ['.P.', 'PLP', 'PLP', '.P.'],
-  ['P..', 'PL.', '.LP', '..P'],
-  ['PPPP'],
-];
-const FLOWER_FRAMES = [
-  ['..P..', '.PPP.', 'PPYPP', '.PPP.', '..P..'],
-  ['.P.P.', 'PP.PP', '..Y..', 'PP.PP', '.P.P.'],
-];
-const PETAL_COLORS = [
-  { P: '#f6757a', L: '#ffb3c6' },
-  { P: '#ffb3c6', L: '#ffe3ea' },
-  { P: '#e8899a', L: '#ffccd5' },
-];
-const FLOWER_COLORS = ['#ffb3c6', '#ffffff', '#fee761', '#c9b6ff'];
 const SNOW_CROSS = ['.W.', 'WWW', '.W.'];
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -50,12 +33,12 @@ export class Ambient {
   }
 
   setTheme(theme) {
-    this.theme = THEMES.includes(theme) ? theme : 'petals';
+    this.theme = THEMES.includes(theme) ? theme : THEMES[0];
     this.populate();
     if (this.theme === 'off') this.ctx.clearRect(0, 0, this.W, this.H);
   }
 
-  // 抽中時吹一陣風，花瓣往旁邊飛
+  // 抽中時吹一陣風，雪花往旁邊飄
   gust() {
     this.gustUntil = performance.now() + 1600;
   }
@@ -65,10 +48,7 @@ export class Ambient {
     this.parts = [];
     this.stars = [];
     this.shooters = [];
-    if (this.theme === 'petals') {
-      const n = Math.round(area / 900);
-      for (let i = 0; i < n; i++) this.parts.push(this.makePetal(true));
-    } else if (this.theme === 'snow') {
+    if (this.theme === 'snow') {
       const n = Math.round(area / 380);
       for (let i = 0; i < n; i++) this.parts.push(this.makeFlake(true));
     } else if (this.theme === 'stars') {
@@ -84,23 +64,6 @@ export class Ambient {
         });
       }
     }
-  }
-
-  makePetal(anywhere) {
-    const flower = Math.random() < 0.15;
-    return {
-      kind: flower ? 'flower' : 'petal',
-      x: rnd(-10, this.W),
-      y: anywhere ? rnd(-10, this.H) : rnd(-20, -6),
-      vy: flower ? rnd(4, 7) : rnd(5, 11),
-      sway: rnd(4, 10),
-      swayRate: rnd(0.6, 1.4),
-      phase: Math.random() * TAU,
-      spin: rnd(4, 9),
-      colors: flower
-        ? { P: FLOWER_COLORS[Math.floor(Math.random() * FLOWER_COLORS.length)], Y: '#feae34' }
-        : PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
-    };
   }
 
   makeFlake(anywhere) {
@@ -126,26 +89,8 @@ export class Ambient {
 
     const { ctx } = this;
     ctx.clearRect(0, 0, this.W, this.H);
-    if (this.theme === 'petals') this.drawPetals(now, dt);
-    else if (this.theme === 'snow') this.drawSnow(now, dt);
+    if (this.theme === 'snow') this.drawSnow(now, dt);
     else if (this.theme === 'stars') this.drawStars(now, dt, reduceMotion);
-  }
-
-  drawPetals(now, dt) {
-    const t = now / 1000;
-    for (let i = 0; i < this.parts.length; i++) {
-      const p = this.parts[i];
-      p.y += p.vy * dt;
-      p.x += (this.wind + Math.sin(t * p.swayRate + p.phase) * p.sway) * dt;
-      if (p.y > this.H + 6 || p.x > this.W + 12) {
-        this.parts[i] = this.makePetal(false);
-        continue;
-      }
-      const frames = p.kind === 'flower' ? FLOWER_FRAMES : PETAL_FRAMES;
-      const rate = p.kind === 'flower' ? p.spin / 3 : p.spin;
-      const frame = frames[Math.floor(t * rate + p.phase) % frames.length];
-      this.blit(frame, p.x, p.y, p.colors, 0.9);
-    }
   }
 
   drawSnow(now, dt) {

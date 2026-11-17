@@ -15,7 +15,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const saved = load();
 setLang(detectLang(saved.lang));
 const state = Object.assign(
-  { text: t('samples').join('\n'), mode: 'replace', drawn: [], history: [], muted: false, ambient: 'petals' },
+  { text: t('samples').join('\n'), mode: 'replace', drawn: [], history: [], muted: false, ambient: 'stars' },
   saved,
   { lang: getLang() },
 );

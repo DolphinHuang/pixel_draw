@@ -319,7 +319,7 @@ textarea:disabled { opacity: .6; }
   z-index: 0;
 }
 .top, .layout { position: relative; z-index: 1; }
-/* 轉盤區稍微透明，讓背景的花瓣隱約透出來 */
+/* 轉盤區稍微透明，讓背景隱約透出來 */
 .stage { background: rgba(43, 49, 80, .8); }
 
 #confetti {
