@@ -3,17 +3,20 @@ import { Mascot } from './mascot.js';
 import { Confetti } from './confetti.js';
 import { sfx } from './sound.js';
 import { randInt, shuffle, pick } from './rng.js';
+import { t, setLang, getLang, detectLang, applyDom } from './i18n.js';
 
 const $ = (sel) => document.querySelector(sel);
 
 const STORE_KEY = 'pixel-draw:v1';
-const SAMPLE = ['小明', '小華', '阿美', '志明', '春嬌', '阿傑', '小芳', '大頭'];
 const MAX_HISTORY = 200;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const saved = load();
+setLang(detectLang(saved.lang));
 const state = Object.assign(
-  { text: SAMPLE.join('\n'), mode: 'replace', drawn: [], history: [], muted: false },
-  load(),
+  { text: t('samples').join('\n'), mode: 'replace', drawn: [], history: [], muted: false },
+  saved,
+  { lang: getLang() },
 );
 
 function load() {
@@ -60,6 +63,7 @@ const el = {
   modeInputs: [...document.querySelectorAll('input[name="mode"]')],
   spinBtn: $('#spinBtn'),
   muteBtn: $('#muteBtn'),
+  langBtn: $('#langBtn'),
   drawnPanel: $('#drawnPanel'),
   drawnList: $('#drawnList'),
   drawnEmpty: $('#drawnEmpty'),
@@ -82,16 +86,14 @@ function refresh() {
   const left = remaining();
   wheel.setItems(left);
 
-  el.count.textContent = `${all.length} 個`;
+  el.count.textContent = t('count', { n: all.length });
   el.status.textContent = state.mode === 'noreplace'
-    ? `剩餘 ${left.length} / 共 ${all.length}`
-    : `共 ${all.length} 個選項`;
-  el.modeHint.textContent = state.mode === 'noreplace'
-    ? '不放回：抽到的會從轉盤上移除'
-    : '放回：抽到的會留在轉盤上，可重複抽中';
+    ? t('statusNoReplace', { left: left.length, total: all.length })
+    : t('statusReplace', { total: all.length });
+  el.modeHint.textContent = t(state.mode === 'noreplace' ? 'hintNoReplace' : 'hintReplace');
   el.modeInputs.forEach((i) => { i.checked = i.value === state.mode; });
   el.spinBtn.disabled = wheel.spinning || left.length === 0;
-  el.spinBtn.textContent = left.length === 0 && all.length > 0 ? '全部抽完了' : '開始抽籤';
+  el.spinBtn.textContent = t(left.length === 0 && all.length > 0 ? 'allDrawn' : 'spin');
 
   renderDrawn();
   renderHistory();
@@ -123,8 +125,8 @@ function renderHistory() {
     meta.className = 'h-meta';
     const mode = document.createElement('span');
     mode.className = 'h-mode';
-    mode.textContent = h.mode === 'noreplace' ? '不放回' : '放回';
-    const time = new Date(h.t).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    mode.textContent = t(h.mode === 'noreplace' ? 'modeNoReplace' : 'modeReplace');
+    const time = new Date(h.t).toLocaleTimeString(getLang() === 'zh' ? 'zh-TW' : 'en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     meta.append(mode, ` · ${time}`);
     li.append(no, name, meta);
     return li;
@@ -149,7 +151,7 @@ function spin() {
     sfx.error();
     mascot.wake();
     mascot.poke();
-    mascot.say(entries().length ? '全部抽完囉！按「全部放回」再來一輪' : '先在名單輸入一些選項吧！');
+    mascot.say(t(entries().length ? 'sayAllDrawn' : 'sayEmpty'));
     return;
   }
 
@@ -158,7 +160,7 @@ function spin() {
   el.spinBtn.disabled = true;
   sfx.start();
   mascot.setState('cheer');
-  mascot.say(pick(['轉啊轉～', '會是誰呢？', '緊張緊張！', '衝啊！', '好運降臨！']), 0);
+  mascot.say(pick(t('saySpin')), 0);
 
   wheel.spinTo(index, {
     onTick: () => sfx.tick(),
@@ -176,7 +178,7 @@ function finish(name) {
   sfx.win();
   if (!reduceMotion) confetti.burst();
   mascot.setState('celebrate');
-  mascot.say(`抽到「${name}」！`, 4000);
+  mascot.say(t('sayResult', { name }), 4000);
 
   renderDrawn();
   renderHistory();
@@ -188,9 +190,9 @@ function openModal(name) {
   el.modalName.textContent = name;
   if (state.mode === 'noreplace') {
     const left = remaining().length;
-    el.modalNote.textContent = left ? `已從轉盤移除，還剩 ${left} 個` : '這是最後一個了！';
+    el.modalNote.textContent = left ? t('noteRemoved', { left }) : t('noteLast');
   } else {
-    el.modalNote.textContent = '放回模式：下次還可能抽到';
+    el.modalNote.textContent = t('noteReplace');
   }
   el.modal.hidden = false;
   $('#againBtn').disabled = state.mode === 'noreplace' && remaining().length === 0;
@@ -232,11 +234,11 @@ $('#sortBtn').addEventListener('click', () => {
   sfx.pop();
 });
 $('#sampleBtn').addEventListener('click', () => {
-  setText(SAMPLE.join('\n'));
+  setText(t('samples').join('\n'));
   sfx.pop();
 });
 $('#clearBtn').addEventListener('click', () => {
-  if (!state.text.trim() || confirm('確定要清空名單嗎？')) setText('');
+  if (!state.text.trim() || confirm(t('confirmClear'))) setText('');
 });
 $('#resetBtn').addEventListener('click', () => {
   state.drawn = [];
@@ -244,10 +246,10 @@ $('#resetBtn').addEventListener('click', () => {
   refresh();
   sfx.pop();
   mascot.poke();
-  mascot.say('全部放回去了！');
+  mascot.say(t('sayReset'));
 });
 $('#clearHistBtn').addEventListener('click', () => {
-  if (!state.history.length || !confirm('確定要清除所有紀錄嗎？')) return;
+  if (!state.history.length || !confirm(t('confirmClearHistory'))) return;
   state.history = [];
   save();
   renderHistory();
@@ -258,7 +260,7 @@ el.modeInputs.forEach((input) => input.addEventListener('change', () => {
   save();
   refresh();
   sfx.pop();
-  mascot.say(state.mode === 'noreplace' ? '不放回模式：抽到就移除' : '放回模式：可以重複抽中');
+  mascot.say(t(state.mode === 'noreplace' ? 'sayModeNoReplace' : 'sayModeReplace'));
 }));
 
 el.spinBtn.addEventListener('click', spin);
@@ -271,8 +273,29 @@ el.mascot.addEventListener('click', () => {
   mascot.wake();
   mascot.poke();
   sfx.pop();
-  mascot.say(pick(['嗨！', '要抽籤嗎？', '點轉盤就能開始喔', '我是抽籤小幫手', '別戳我啦～']));
+  mascot.say(pick(t('sayPoke')));
 });
+
+// 切換語言時，若名單還是另一種語言的範例，就一起換掉
+el.langBtn.addEventListener('click', () => {
+  if (wheel.spinning) return;
+  const wasSample = entries().join('\n') === t('samples').join('\n');
+  state.lang = setLang(getLang() === 'zh' ? 'en' : 'zh');
+  if (wasSample && !state.drawn.length) setText(t('samples').join('\n'));
+  applyLang();
+  save();
+  sfx.pop();
+  mascot.say(t('sayHello'));
+});
+
+function applyLang() {
+  applyDom();
+  wheel.labels = { empty: t('wheelEmpty'), hub: t('hub') };
+  const url = new URL(location.href);
+  url.searchParams.set('lang', getLang());
+  history.replaceState(null, '', url);
+  refresh();
+}
 
 el.muteBtn.addEventListener('click', () => {
   state.muted = sfx.muted = !sfx.muted;
@@ -308,7 +331,7 @@ function loop(now) {
 }
 
 syncMute();
-refresh();
+applyLang();
 requestAnimationFrame(loop);
 document.fonts?.ready.then(() => wheel.draw(performance.now()));
-setTimeout(() => mascot.say('嗨！點轉盤開始抽籤吧'), 600);
+setTimeout(() => mascot.say(t('sayHello')), 600);

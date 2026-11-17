@@ -33,6 +33,7 @@ export class Wheel {
     this.anim = null;
     this.kick = 0;         // 指針被格線撥動的擺幅
     this.lastSeg = 0;
+    this.labels = { empty: '名單是空的', hub: '抽' };
   }
 
   get spinning() {
@@ -163,7 +164,7 @@ export class Wheel {
       ctx.font = `16px ${FONT}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('名單是空的', c, c - 56);
+      ctx.fillText(this.labels.empty, c, c - 56);
     }
 
     this.drawHub(c);
@@ -208,10 +209,11 @@ export class Wheel {
     ctx.fillStyle = '#fee761';
     ctx.fillRect(c - 12, c - 14, 6, 4);
     ctx.fillStyle = INK;
-    ctx.font = `20px ${FONT}`;
+    const hub = this.spinning ? '…' : this.labels.hub;
+    ctx.font = `${hub.length > 1 ? 16 : 20}px ${FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(this.spinning ? '…' : '抽', c, c);
+    ctx.fillText(hub, c, c);
   }
 
   // 用方塊疊出像素三角指針

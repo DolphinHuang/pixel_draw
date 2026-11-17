@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>像素抽籤機</title>
-  <meta name="description" content="像素風轉盤抽籤，支援放回 / 不放回模式">
+  <meta name="description" content="像素風轉盤抽籤，支援放回 / 不放回模式 · Pixel-art picker wheel with keep / remove modes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -14,70 +14,73 @@
   <header class="top">
     <h1 class="logo">
       <span class="logo-en">PIXEL DRAW</span>
-      <span class="logo-zh">像素抽籤機</span>
+      <span class="logo-zh" data-i18n="logoSub">像素抽籤機</span>
     </h1>
-    <button id="muteBtn" class="btn btn-icon" type="button" aria-pressed="false" title="音效開關">♪ ON</button>
+    <div class="top-actions">
+      <button id="langBtn" class="btn btn-lang" type="button" data-i18n="langBtn" data-i18n-attr="title:langTitle">EN</button>
+      <button id="muteBtn" class="btn btn-icon" type="button" aria-pressed="false" data-i18n-attr="title:muteTitle">♪ ON</button>
+    </div>
   </header>
 
   <main class="layout">
-    <section class="stage panel" aria-label="轉盤">
+    <section class="stage panel">
       <div class="wheel-wrap">
-        <canvas id="wheel" width="300" height="300" aria-label="抽籤轉盤，點擊開始抽籤"></canvas>
+        <canvas id="wheel" width="300" height="300" data-i18n-attr="aria-label:wheelLabel"></canvas>
         <div class="mascot-wrap">
           <div id="bubble" class="bubble" role="status" aria-live="polite"></div>
-          <canvas id="mascot" width="24" height="26" title="戳我一下"></canvas>
+          <canvas id="mascot" width="24" height="26" data-i18n-attr="title:mascotTitle"></canvas>
         </div>
       </div>
 
       <div class="stage-controls">
-        <div class="mode" role="radiogroup" aria-label="抽籤模式">
+        <div class="mode" role="radiogroup" data-i18n-attr="aria-label:modeGroup">
           <label class="mode-opt">
             <input type="radio" name="mode" value="replace">
-            <span>放回</span>
+            <span data-i18n="modeReplace">放回</span>
           </label>
           <label class="mode-opt">
             <input type="radio" name="mode" value="noreplace">
-            <span>不放回</span>
+            <span data-i18n="modeNoReplace">不放回</span>
           </label>
         </div>
         <p id="modeHint" class="hint"></p>
         <button id="spinBtn" class="btn btn-primary btn-big" type="button">開始抽籤</button>
         <p id="status" class="status"></p>
-        <p class="hint">點轉盤或按 <kbd>空白鍵</kbd> 也可以抽</p>
+        <p class="hint" data-i18n-html="keyHint">點轉盤或按 <kbd>空白鍵</kbd> 也可以抽</p>
       </div>
     </section>
 
     <aside class="side">
       <section class="panel">
         <div class="panel-head">
-          <h2>名單</h2>
+          <h2 data-i18n="list">名單</h2>
           <span id="count" class="tag">0 個</span>
         </div>
-        <textarea id="entries" rows="9" spellcheck="false" placeholder="一行輸入一個選項"></textarea>
+        <textarea id="entries" rows="9" spellcheck="false" data-i18n-attr="placeholder:placeholder"></textarea>
         <div class="row">
-          <button id="shuffleBtn" class="btn" type="button">打亂</button>
-          <button id="sortBtn" class="btn" type="button">排序</button>
-          <button id="sampleBtn" class="btn" type="button">範例</button>
-          <button id="clearBtn" class="btn btn-danger" type="button">清空</button>
+          <button id="shuffleBtn" class="btn" type="button" data-i18n="shuffle">打亂</button>
+          <button id="sortBtn" class="btn" type="button" data-i18n="sort">排序</button>
+          <button id="sampleBtn" class="btn" type="button" data-i18n="sample">範例</button>
+          <button id="clearBtn" class="btn btn-danger" type="button" data-i18n="clear">清空</button>
         </div>
       </section>
 
       <section id="drawnPanel" class="panel">
         <div class="panel-head">
-          <h2>已抽出</h2>
-          <button id="resetBtn" class="btn btn-sm" type="button">全部放回</button>
+          <h2 data-i18n="drawn">已抽出</h2>
+          <button id="resetBtn" class="btn btn-sm" type="button" data-i18n="resetDrawn">全部放回</button>
         </div>
         <ol id="drawnList" class="chips"></ol>
-        <p id="drawnEmpty" class="empty">還沒有抽出任何項目</p>
+        <p id="drawnEmpty" class="empty" data-i18n="drawnEmpty">還沒有抽出任何項目</p>
       </section>
 
       <section class="panel">
         <div class="panel-head">
-          <h2>紀錄</h2>
-          <button id="clearHistBtn" class="btn btn-sm" type="button">清除</button>
+          <h2 data-i18n="history">紀錄</h2>
+          <button id="clearHistBtn" class="btn btn-sm" type="button" data-i18n="clearHistory">清除</button>
         </div>
         <ol id="historyList" class="history"></ol>
-        <p id="historyEmpty" class="empty">轉一下就會留下紀錄</p>
+        <p id="historyEmpty" class="empty" data-i18n="historyEmpty">轉一下就會留下紀錄</p>
       </section>
     </aside>
   </main>
@@ -88,8 +91,8 @@
       <p id="modalName" class="modal-name"></p>
       <p id="modalNote" class="modal-note"></p>
       <div class="row row-center">
-        <button id="againBtn" class="btn btn-primary" type="button">再抽一次</button>
-        <button id="closeBtn" class="btn" type="button">關閉</button>
+        <button id="againBtn" class="btn btn-primary" type="button" data-i18n="again">再抽一次</button>
+        <button id="closeBtn" class="btn" type="button" data-i18n="close">關閉</button>
       </div>
     </div>
   </div>
