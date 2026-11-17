@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>像素抽籤機</title>
+  <meta name="description" content="像素風轉盤抽籤，支援放回 / 不放回模式">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1 class="logo">
+      <span class="logo-en">PIXEL DRAW</span>
+      <span class="logo-zh">像素抽籤機</span>
+    </h1>
+    <button id="muteBtn" class="btn btn-icon" type="button" aria-pressed="false" title="音效開關">♪ ON</button>
+  </header>
+
+  <main class="layout">
+    <section class="stage panel" aria-label="轉盤">
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="300" height="300" aria-label="抽籤轉盤，點擊開始抽籤"></canvas>
+        <div class="mascot-wrap">
+          <div id="bubble" class="bubble" role="status" aria-live="polite"></div>
+          <canvas id="mascot" width="24" height="26" title="戳我一下"></canvas>
+        </div>
+      </div>
+
+      <div class="stage-controls">
+        <div class="mode" role="radiogroup" aria-label="抽籤模式">
+          <label class="mode-opt">
+            <input type="radio" name="mode" value="replace">
+            <span>放回</span>
+          </label>
+          <label class="mode-opt">
+            <input type="radio" name="mode" value="noreplace">
+            <span>不放回</span>
+          </label>
+        </div>
+        <p id="modeHint" class="hint"></p>
+        <button id="spinBtn" class="btn btn-primary btn-big" type="button">開始抽籤</button>
+        <p id="status" class="status"></p>
+        <p class="hint">點轉盤或按 <kbd>空白鍵</kbd> 也可以抽</p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>名單</h2>
+          <span id="count" class="tag">0 個</span>
+        </div>
+        <textarea id="entries" rows="9" spellcheck="false" placeholder="一行輸入一個選項"></textarea>
+        <div class="row">
+          <button id="shuffleBtn" class="btn" type="button">打亂</button>
+          <button id="sortBtn" class="btn" type="button">排序</button>
+          <button id="sampleBtn" class="btn" type="button">範例</button>
+          <button id="clearBtn" class="btn btn-danger" type="button">清空</button>
+        </div>
+      </section>
+
+      <section id="drawnPanel" class="panel">
+        <div class="panel-head">
+          <h2>已抽出</h2>
+          <button id="resetBtn" class="btn btn-sm" type="button">全部放回</button>
+        </div>
+        <ol id="drawnList" class="chips"></ol>
+        <p id="drawnEmpty" class="empty">還沒有抽出任何項目</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>紀錄</h2>
+          <button id="clearHistBtn" class="btn btn-sm" type="button">清除</button>
+        </div>
+        <ol id="historyList" class="history"></ol>
+        <p id="historyEmpty" class="empty">轉一下就會留下紀錄</p>
+      </section>
+    </aside>
+  </main>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card panel" role="dialog" aria-modal="true" aria-labelledby="modalName">
+      <p class="modal-kicker">WINNER!</p>
+      <p id="modalName" class="modal-name"></p>
+      <p id="modalNote" class="modal-note"></p>
+      <div class="row row-center">
+        <button id="againBtn" class="btn btn-primary" type="button">再抽一次</button>
+        <button id="closeBtn" class="btn" type="button">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
