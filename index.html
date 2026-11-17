@@ -11,12 +11,15 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <canvas id="ambient" aria-hidden="true"></canvas>
+
   <header class="top">
     <h1 class="logo">
       <span class="logo-en">PIXEL DRAW</span>
       <span class="logo-zh" data-i18n="logoSub">像素抽籤機</span>
     </h1>
     <div class="top-actions">
+      <button id="themeBtn" class="btn btn-lang" type="button"></button>
       <button id="langBtn" class="btn btn-lang" type="button" data-i18n="langBtn" data-i18n-attr="title:langTitle">EN</button>
       <button id="muteBtn" class="btn btn-icon" type="button" aria-pressed="false" data-i18n-attr="title:muteTitle">♪ ON</button>
     </div>

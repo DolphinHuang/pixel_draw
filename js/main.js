@@ -1,6 +1,7 @@
 import { Wheel } from './wheel.js';
 import { Mascot } from './mascot.js';
 import { Confetti } from './confetti.js';
+import { Ambient, THEMES } from './ambient.js';
 import { sfx } from './sound.js';
 import { randInt, shuffle, pick } from './rng.js';
 import { t, setLang, getLang, detectLang, applyDom } from './i18n.js';
@@ -14,7 +15,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const saved = load();
 setLang(detectLang(saved.lang));
 const state = Object.assign(
-  { text: t('samples').join('\n'), mode: 'replace', drawn: [], history: [], muted: false },
+  { text: t('samples').join('\n'), mode: 'replace', drawn: [], history: [], muted: false, ambient: 'petals' },
   saved,
   { lang: getLang() },
 );
@@ -64,6 +65,7 @@ const el = {
   spinBtn: $('#spinBtn'),
   muteBtn: $('#muteBtn'),
   langBtn: $('#langBtn'),
+  themeBtn: $('#themeBtn'),
   drawnPanel: $('#drawnPanel'),
   drawnList: $('#drawnList'),
   drawnEmpty: $('#drawnEmpty'),
@@ -78,6 +80,9 @@ const el = {
 const wheel = new Wheel(el.wheel);
 const mascot = new Mascot(el.mascot, el.bubble);
 const confetti = new Confetti($('#confetti'));
+const ambient = new Ambient($('#ambient'));
+ambient.setTheme(state.ambient);
+state.ambient = ambient.theme;
 sfx.muted = state.muted;
 
 // ---------- render ----------
@@ -176,7 +181,10 @@ function finish(name) {
 
   setLocked(false);
   sfx.win();
-  if (!reduceMotion) confetti.burst();
+  if (!reduceMotion) {
+    confetti.burst();
+    ambient.gust();
+  }
   mascot.setState('celebrate');
   mascot.say(t('sayResult', { name }), 4000);
 
@@ -288,8 +296,23 @@ el.langBtn.addEventListener('click', () => {
   mascot.say(t('sayHello'));
 });
 
+el.themeBtn.addEventListener('click', () => {
+  state.ambient = THEMES[(THEMES.indexOf(state.ambient) + 1) % THEMES.length];
+  ambient.setTheme(state.ambient);
+  syncTheme();
+  save();
+  sfx.pop();
+});
+
+function syncTheme() {
+  const name = t(`theme_${state.ambient}`);
+  el.themeBtn.textContent = name;
+  el.themeBtn.title = t('themeTitle', { name });
+}
+
 function applyLang() {
   applyDom();
+  syncTheme();
   wheel.labels = { empty: t('wheelEmpty'), hub: t('hub') };
   const url = new URL(location.href);
   url.searchParams.set('lang', getLang());
@@ -324,6 +347,7 @@ document.addEventListener('pointerdown', () => mascot.wake());
 
 // ---------- loop ----------
 function loop(now) {
+  ambient.update(now, reduceMotion);
   wheel.update(now);
   mascot.update(now);
   confetti.update(now);
