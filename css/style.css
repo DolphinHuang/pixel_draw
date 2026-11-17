@@ -322,6 +322,17 @@ textarea:disabled { opacity: .6; }
 /* 轉盤區稍微透明，讓背景隱約透出來 */
 .stage { background: rgba(43, 49, 80, .8); }
 
+/* 底部跑來跑去的風車小傢伙，在內容後面，不擋點擊 */
+#buddy {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.layout { padding-bottom: 120px; }
+
 #confetti {
   position: fixed;
   inset: 0;

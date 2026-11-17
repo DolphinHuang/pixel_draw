@@ -2,6 +2,7 @@ import { Wheel } from './wheel.js';
 import { Mascot } from './mascot.js';
 import { Confetti } from './confetti.js';
 import { Ambient, THEMES } from './ambient.js';
+import { Buddy } from './buddy.js';
 import { sfx } from './sound.js';
 import { randInt, shuffle, pick } from './rng.js';
 import { t, setLang, getLang, detectLang, applyDom } from './i18n.js';
@@ -81,6 +82,7 @@ const wheel = new Wheel(el.wheel);
 const mascot = new Mascot(el.mascot, el.bubble);
 const confetti = new Confetti($('#confetti'));
 const ambient = new Ambient($('#ambient'));
+const buddy = new Buddy($('#buddy'));
 ambient.setTheme(state.ambient);
 state.ambient = ambient.theme;
 sfx.muted = state.muted;
@@ -164,6 +166,7 @@ function spin() {
   setLocked(true);
   el.spinBtn.disabled = true;
   sfx.start();
+  buddy.setExcited(true);
   mascot.setState('cheer');
   mascot.say(pick(t('saySpin')), 0);
 
@@ -180,6 +183,8 @@ function finish(name) {
   save();
 
   setLocked(false);
+  buddy.setExcited(false);
+  buddy.cheer();
   sfx.win();
   if (!reduceMotion) {
     confetti.burst();
@@ -350,6 +355,7 @@ function loop(now) {
   ambient.update(now, reduceMotion);
   wheel.update(now);
   mascot.update(now);
+  buddy.update(now, reduceMotion);
   confetti.update(now);
   requestAnimationFrame(loop);
 }

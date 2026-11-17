@@ -6,6 +6,7 @@
 - 會動的像素小人：待機呼吸眨眼、轉盤時歡呼、抽中跳躍，放著不動會睡著，點它會跳
 - 8-bit 音效（WebAudio 即時合成）、像素彩帶、跑馬燈
 - 背景主題：星空流星、下雪（抽中時會起風），右上角切換
+- 底部有拿著風車跑來跑去的小傢伙：轉盤轉動時跑更快，抽中時連跳三下
 - 抽籤使用 `crypto.getRandomValues`，每個選項機率相同
 - 名單、模式、紀錄存在瀏覽器 localStorage
 - **中文 / English** 介面，右上角切換；也可以用網址 `?lang=en` 或 `?lang=zh` 指定
@@ -44,6 +45,7 @@ js/wheel.js     轉盤繪製與旋轉動畫
 js/mascot.js    像素小人 sprite 與動畫
 js/confetti.js  像素彩帶
 js/ambient.js   背景主題（星空 / 下雪）
+js/buddy.js     底部拿風車跑步的角色
 js/sound.js     8-bit 音效
 js/rng.js       亂數工具
 js/i18n.js      中英文字串
