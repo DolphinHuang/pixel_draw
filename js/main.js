@@ -83,6 +83,16 @@ const mascot = new Mascot(el.mascot, el.bubble);
 const confetti = new Confetti($('#confetti'));
 const ambient = new Ambient($('#ambient'));
 const buddy = new Buddy($('#buddy'));
+buddy.onGrab = () => {
+  sfx.grab();
+  mascot.wake();
+  mascot.say(pick(t('sayBuddyGrab')));
+};
+buddy.onDrop = () => {
+  sfx.toss();
+  mascot.say(pick(t('sayBuddyDrop')));
+};
+buddy.onLand = () => sfx.land();
 ambient.setTheme(state.ambient);
 state.ambient = ambient.theme;
 sfx.muted = state.muted;

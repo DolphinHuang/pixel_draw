@@ -55,6 +55,23 @@ export const sfx = {
     tone(990, 0.06, { delay: 0.05 });
   },
 
+  // 被抓起來的驚叫
+  grab() {
+    if (this.muted) return;
+    [700, 1000, 1400].forEach((f, i) => tone(f, 0.05, { delay: i * 0.04, vol: 0.05 }));
+  },
+
+  toss() {
+    if (this.muted) return;
+    tone(500, 0.08, { type: 'triangle', vol: 0.08 });
+    tone(300, 0.1, { type: 'triangle', delay: 0.06, vol: 0.08 });
+  },
+
+  land() {
+    if (this.muted) return;
+    tone(110, 0.08, { vol: 0.08 });
+  },
+
   error() {
     if (this.muted) return;
     tone(196, 0.12, { type: 'square' });

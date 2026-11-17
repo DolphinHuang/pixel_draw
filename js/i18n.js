@@ -53,6 +53,8 @@ const STRINGS = {
     sayModeNoReplace: '不放回模式：抽到就移除',
     saySpin: ['轉啊轉～', '會是誰呢？', '緊張緊張！', '衝啊！', '好運降臨！'],
     sayPoke: ['嗨！', '要抽籤嗎？', '點轉盤就能開始喔', '我是抽籤小幫手', '別戳我啦～'],
+    sayBuddyGrab: ['放開它啦！', '它在發抖耶…', '輕一點輕一點！', '它好像很緊張'],
+    sayBuddyDrop: ['沒事吧？', '飛好遠！', '它暈了…'],
     samples: ['小明', '小華', '阿美', '志明', '春嬌', '阿傑', '小芳', '大頭'],
   },
   en: {
@@ -108,6 +110,8 @@ const STRINGS = {
     sayModeNoReplace: 'Remove mode: winners leave the wheel',
     saySpin: ['Round and round~', 'Who will it be?', 'So exciting!', 'Go go go!', 'Good luck!'],
     sayPoke: ['Hi!', 'Wanna spin?', 'Click the wheel to start', 'I\'m your picker buddy', 'Hey, stop poking~'],
+    sayBuddyGrab: ['Put it down!', 'It\'s shaking…', 'Gently, gently!', 'It looks nervous'],
+    sayBuddyDrop: ['You okay?', 'Wheee!', 'It\'s dizzy…'],
     samples: ['Alice', 'Bob', 'Charlie', 'Diana', 'Ethan', 'Fiona', 'George', 'Hannah'],
   },
 };
